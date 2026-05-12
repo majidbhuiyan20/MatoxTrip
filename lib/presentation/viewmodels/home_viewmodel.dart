@@ -1,14 +1,62 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
-final homeViewModelProvider = ChangeNotifierProvider((ref) => HomeViewModel());
+import '../../domain/entities/destination.dart';
+import '../../domain/entities/hotel.dart';
+import '../../core/providers/injection.dart';
 
-class HomeViewModel extends StateNotifier<AsyncValue<void>> {
-  HomeViewModel() : super(const AsyncValue.data(null));
+class HomeState {
+  final List<Destination> destinations;
+  final List<Hotel> trendingHotels;
+  final bool isLoading;
+  final String searchQuery;
+
+  HomeState({
+    this.destinations = const [],
+    this.trendingHotels = const [],
+    this.isLoading = false,
+    this.searchQuery = '',
+  });
+
+  HomeState copyWith({
+    List<Destination>? destinations,
+    List<Hotel>? trendingHotels,
+    bool? isLoading,
+    String? searchQuery,
+  }) {
+    return HomeState(
+      destinations: destinations ?? this.destinations,
+      trendingHotels: trendingHotels ?? this.trendingHotels,
+      isLoading: isLoading ?? this.isLoading,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
 }
 
-// Alternatively, keeping it simple as a ChangeNotifier if you prefer that style with Riverpod
+final homeViewModelProvider = StateNotifierProvider<HomeViewModel, HomeState>((ref) {
+  return HomeViewModel(ref);
+});
 
+class HomeViewModel extends StateNotifier<HomeState> {
+  final Ref _ref;
+  
+  HomeViewModel(this._ref) : super(HomeState());
 
-final homeProvider = ChangeNotifierProvider((ref) => HomeNotifier());
+  Future<void> loadHomeData() async {
+    state = state.copyWith(isLoading: true);
 
-class HomeNotifier extends ChangeNotifier {}
+    try {
+      final destinations = await _ref.read(getAllDestinationsProvider).call();
+      final trendingHotels = await _ref.read(getTrendingHotelsProvider).call();
+      state = state.copyWith(
+        destinations: destinations,
+        trendingHotels: trendingHotels,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void onSearchChanged(String query) {
+    state = state.copyWith(searchQuery: query);
+  }
+}
