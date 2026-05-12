@@ -13,10 +13,13 @@ class NavbarWidget extends StatelessWidget {
     return Container(
       height: 70,
       decoration: const BoxDecoration(
-        color: AppColors.primary,
+        color: AppColors.white,
+        border: Border(
+          bottom: BorderSide(color: AppColors.divider, width: 1),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black12,
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
@@ -33,11 +36,11 @@ class NavbarWidget extends StatelessWidget {
               onTap: () => context.go('/'),
               child: Row(
                 children: [
-                  const Icon(Icons.travel_explore, color: AppColors.white, size: 32),
+                  const Icon(Icons.travel_explore, color: AppColors.primary, size: 32),
                   const SizedBox(width: 8),
                   Text(
                     'MatoxTrip',
-                    style: AppTextStyles.headingSmall.copyWith(color: AppColors.white),
+                    style: AppTextStyles.headingSmall.copyWith(color: AppColors.primary),
                   ),
                 ],
               ),
@@ -53,14 +56,15 @@ class NavbarWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.white,
-                  foregroundColor: AppColors.primary,
+                  backgroundColor: AppColors.primaryButton,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 ),
-                child: const Text('Sign In / Register'),
+                child: const Text('Find Deals'),
               ),
             ] else
               IconButton(
-                icon: const Icon(Icons.menu, color: AppColors.white),
+                icon: const Icon(Icons.menu, color: AppColors.primary),
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
           ],
@@ -89,12 +93,12 @@ class _NavLink extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.white, size: 18),
+            Icon(icon, color: AppColors.textPrimary, size: 18),
             const SizedBox(width: 6),
             Text(
               title,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),

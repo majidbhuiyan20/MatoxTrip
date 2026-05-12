@@ -6,176 +6,173 @@ import '../../domain/entities/hotel.dart';
 
 class HotelCardWidget extends StatelessWidget {
   final Hotel hotel;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const HotelCardWidget({
     super.key,
     required this.hotel,
-    required this.onTap,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 4,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      color: AppColors.white,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
+            // Top: Hotel Image (16:9)
             Stack(
               children: [
-                CachedNetworkImage(
-                  imageUrl: hotel.imageUrl,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    height: 200,
-                    color: AppColors.surface,
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    height: 200,
-                    color: AppColors.surface,
-                    child: const Icon(Icons.hotel, color: AppColors.textHint),
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: CachedNetworkImage(
+                    imageUrl: hotel.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(color: AppColors.surface),
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.surface,
+                      child: const Icon(Icons.hotel, color: AppColors.textHint),
+                    ),
                   ),
                 ),
+                // Great Deal Badge
                 if (hotel.isTopDeal)
                   Positioned(
-                    top: 12,
-                    left: 0,
+                    top: 10,
+                    right: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: const BoxDecoration(
                         color: AppColors.deal,
                         borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(4),
-                          bottomRight: Radius.circular(4),
+                          topLeft: Radius.circular(4),
+                          bottomLeft: Radius.circular(4),
                         ),
                       ),
-                      child: const Text(
-                        'Top Deal',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+                      child: Text(
+                        'Great Deal',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.white,
                           fontWeight: FontWeight.bold,
+                          fontSize: 10,
                         ),
                       ),
                     ),
                   ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.favorite_border, size: 20, color: AppColors.primary),
-                  ),
-                ),
               ],
             ),
             
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          hotel.name,
-                          style: AppTextStyles.headingSmall.copyWith(fontSize: 18),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Row(
-                        children: List.generate(
-                          hotel.starRating,
-                          (index) => const Icon(Icons.star, size: 14, color: AppColors.accent),
-                        ),
-                      ),
-                    ],
+                  // Hotel Name (bold, #333)
+                  Text(
+                    hotel.name,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
+                  
+                  // Location with Pin Icon (#0071C2)
                   Row(
                     children: [
                       const Icon(Icons.location_on, size: 14, color: AppColors.primaryLight),
                       const SizedBox(width: 4),
-                      Text(
-                        hotel.location,
-                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.primaryLight),
+                      Expanded(
+                        child: Text(
+                          hotel.location,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.primaryLight,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
+                  
+                  // Star Rating Row + Review Score Badge (blue pill #003580)
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            topRight: Radius.circular(4),
-                            bottomRight: Radius.circular(4),
-                          ),
-                        ),
-                        child: Text(
-                          hotel.rating.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                      Row(
+                        children: List.generate(
+                          5,
+                          (index) => Icon(
+                            index < hotel.starRating ? Icons.star : Icons.star_border,
+                            size: 14,
+                            color: AppColors.accent,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      _ReviewBadge(rating: hotel.rating, reviewCount: hotel.reviewCount),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Amenity Chips (max 3, then +X more)
+                  _buildAmenities(),
+                  
+                  const Divider(height: 24, color: AppColors.divider),
+                  
+                  // Bottom Section: Price
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _getRatingText(hotel.rating),
-                            style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                            'Starting from',
+                            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                           ),
                           Text(
-                            '${hotel.reviewCount} reviews',
-                            style: AppTextStyles.bodySmall,
+                            'BDT ${hotel.pricePerNight.toStringAsFixed(0)}',
+                            style: AppTextStyles.priceStyle.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  const Divider(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if (hotel.isTopDeal)
-                            Text(
-                              'BDT ${hotel.originalPrice}',
-                              style: AppTextStyles.strikethroughStyle,
-                            ),
-                          Text(
-                            'BDT ${hotel.pricePerNight.toInt()}',
-                            style: AppTextStyles.priceStyle,
-                          ),
-                          Text(
-                            '+ BDT 542 taxes and charges',
-                            style: AppTextStyles.bodySmall,
-                          ),
-                        ],
+                  const SizedBox(height: 12),
+                  
+                  // Check Deal Button (#006CE4, full width)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: onTap,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryButton,
+                        foregroundColor: AppColors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                    ],
+                      child: const Text(
+                        'Check Deal',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -186,11 +183,94 @@ class HotelCardWidget extends StatelessWidget {
     );
   }
 
-  String _getRatingText(double rating) {
+  Widget _buildAmenities() {
+    final displayAmenities = hotel.amenities.take(3).toList();
+    final remainingCount = hotel.amenities.length - 3;
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: [
+        ...displayAmenities.map((amenity) => _AmenityChip(label: amenity)),
+        if (remainingCount > 0) _AmenityChip(label: '+$remainingCount more'),
+      ],
+    );
+  }
+}
+
+class _ReviewBadge extends StatelessWidget {
+  final double rating;
+  final int reviewCount;
+
+  const _ReviewBadge({required this.rating, required this.reviewCount});
+
+  String get _ratingLabel {
     if (rating >= 9.0) return 'Exceptional';
-    if (rating >= 8.5) return 'Superb';
+    if (rating >= 8.5) return 'Excellent';
     if (rating >= 8.0) return 'Very Good';
     if (rating >= 7.0) return 'Good';
-    return 'Pleasant';
+    return 'Good';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              _ratingLabel,
+              style: AppTextStyles.bodySmall.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Text(
+              '$reviewCount reviews',
+              style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
+            ),
+          ],
+        ),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            rating.toStringAsFixed(1),
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AmenityChip extends StatelessWidget {
+  final String label;
+
+  const _AmenityChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.bodySmall.copyWith(fontSize: 10, color: AppColors.success),
+      ),
+    );
   }
 }
