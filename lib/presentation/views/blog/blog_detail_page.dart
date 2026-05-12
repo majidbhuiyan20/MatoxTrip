@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/blog_viewmodel.dart';
+import '../../widgets/common/app_drawer.dart';
 import '../../widgets/common/navbar_widget.dart';
 import '../../widgets/common/footer_widget.dart';
 import '../../../core/constants/app_colors.dart';
@@ -20,7 +21,7 @@ class _BlogDetailPageState extends ConsumerState<BlogDetailPage> {
   void initState() {
     super.initState();
     Future.microtask(() =>
-        ref.read(blogViewModelProvider.notifier).loadBlogPosts());
+        ref.read(blogViewModelProvider.notifier).loadPostBySlug(widget.slug));
   }
 
   @override
@@ -31,10 +32,12 @@ class _BlogDetailPageState extends ConsumerState<BlogDetailPage> {
         : 20.0;
 
     if (state.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
-    final blogPost = state.blogPosts.cast().where((post) => post.slug == widget.slug).firstOrNull;
+    final blogPost = state.currentPost;
 
     if (blogPost == null) {
       return Scaffold(
@@ -50,6 +53,7 @@ class _BlogDetailPageState extends ConsumerState<BlogDetailPage> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
+      drawer: const AppDrawer(),
       body: Column(
         children: [
           const NavbarWidget(),

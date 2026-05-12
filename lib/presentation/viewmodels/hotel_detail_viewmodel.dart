@@ -44,17 +44,20 @@ class HotelDetailViewModel extends StateNotifier<HotelDetailState> {
     state = state.copyWith(isLoading: true, selectedImageIndex: 0);
 
     try {
-      final allHotels = await _ref.read(getTrendingHotelsProvider).call();
-      final hotel = allHotels.firstWhere((h) => h.id == hotelId);
+      final hotel = await _ref.read(getHotelByIdProvider).call(hotelId);
       
-      final relatedHotels = await _ref.read(getHotelsByDestinationProvider).call(hotel.destinationId);
-      relatedHotels.removeWhere((h) => h.id == hotelId);
+      if (hotel != null) {
+        final relatedHotels = await _ref.read(getHotelsByDestinationProvider).call(hotel.destinationId);
+        relatedHotels.removeWhere((h) => h.id == hotelId);
 
-      state = state.copyWith(
-        hotel: hotel,
-        relatedHotels: relatedHotels,
-        isLoading: false,
-      );
+        state = state.copyWith(
+          hotel: hotel,
+          relatedHotels: relatedHotels,
+          isLoading: false,
+        );
+      } else {
+        state = state.copyWith(isLoading: false);
+      }
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }

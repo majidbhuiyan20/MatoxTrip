@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/blog_viewmodel.dart';
+import '../../widgets/common/app_drawer.dart';
 import '../../widgets/common/navbar_widget.dart';
 import '../../widgets/common/footer_widget.dart';
 import '../../widgets/blog_card_widget.dart';
@@ -31,6 +32,7 @@ class _BlogListPageState extends ConsumerState<BlogListPage> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
+      drawer: const AppDrawer(),
       body: Column(
         children: [
           const NavbarWidget(),

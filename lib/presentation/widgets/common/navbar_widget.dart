@@ -34,15 +34,10 @@ class NavbarWidget extends StatelessWidget {
             // Logo
             GestureDetector(
               onTap: () => context.go('/'),
-              child: Row(
-                children: [
-                  const Icon(Icons.travel_explore, color: AppColors.primary, size: 32),
-                  const SizedBox(width: 8),
-                  Text(
-                    'MatoxTrip',
-                    style: AppTextStyles.headingSmall.copyWith(color: AppColors.primary),
-                  ),
-                ],
+              child: Image.asset(
+                'assets/icons/logo.png',
+                height: 40,
+                fit: BoxFit.contain,
               ),
             ),
             const Spacer(),

@@ -31,4 +31,9 @@ class HotelRepositoryImpl implements HotelRepository {
         .where((hotel) => hotel.isTopDeal)
         .toList();
   }
+
+  @override
+  Future<List<Hotel>> getAllHotels() async {
+    return localDataSource.getHotels();
+  }
 }

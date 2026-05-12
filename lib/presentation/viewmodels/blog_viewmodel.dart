@@ -4,19 +4,23 @@ import '../../core/providers/injection.dart';
 
 class BlogState {
   final List<BlogPost> blogPosts;
+  final BlogPost? currentPost;
   final bool isLoading;
 
   BlogState({
     this.blogPosts = const [],
+    this.currentPost,
     this.isLoading = false,
   });
 
   BlogState copyWith({
     List<BlogPost>? blogPosts,
+    BlogPost? currentPost,
     bool? isLoading,
   }) {
     return BlogState(
       blogPosts: blogPosts ?? this.blogPosts,
+      currentPost: currentPost ?? this.currentPost,
       isLoading: isLoading ?? this.isLoading,
     );
   }
@@ -36,6 +40,16 @@ class BlogViewModel extends StateNotifier<BlogState> {
     try {
       final posts = await _ref.read(getBlogPostsProvider).call();
       state = state.copyWith(blogPosts: posts, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> loadPostBySlug(String slug) async {
+    state = state.copyWith(isLoading: true, currentPost: null);
+    try {
+      final post = await _ref.read(getBlogPostBySlugProvider).call(slug);
+      state = state.copyWith(currentPost: post, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }

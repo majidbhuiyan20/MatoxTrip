@@ -7,9 +7,12 @@ import '../../domain/repositories/blog_repository.dart';
 import '../../domain/repositories/destination_repository.dart';
 import '../../domain/repositories/hotel_repository.dart';
 import '../../domain/usecases/get_all_destinations.dart';
+import '../../domain/usecases/get_blog_post_by_slug.dart';
 import '../../domain/usecases/get_blog_posts.dart';
+import '../../domain/usecases/get_hotel_by_id.dart';
 import '../../domain/usecases/get_hotels_by_destination.dart';
 import '../../domain/usecases/get_trending_hotels.dart';
+import '../../domain/usecases/get_all_hotels.dart';
 
 // Data Sources
 final localDataSourceProvider = Provider((ref) => LocalDataSource());
@@ -36,10 +39,22 @@ final getTrendingHotelsProvider = Provider((ref) {
   return GetTrendingHotels(ref.watch(hotelRepositoryProvider));
 });
 
+final getHotelByIdProvider = Provider((ref) {
+  return GetHotelById(ref.watch(hotelRepositoryProvider));
+});
+
 final getAllDestinationsProvider = Provider((ref) {
   return GetAllDestinations(ref.watch(destinationRepositoryProvider));
 });
 
 final getBlogPostsProvider = Provider((ref) {
   return GetBlogPosts(ref.watch(blogRepositoryProvider));
+});
+
+final getBlogPostBySlugProvider = Provider((ref) {
+  return GetBlogPostBySlug(ref.watch(blogRepositoryProvider));
+});
+
+final getAllHotelsProvider = Provider((ref) {
+  return GetAllHotels(ref.watch(hotelRepositoryProvider));
 });

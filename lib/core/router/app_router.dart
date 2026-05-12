@@ -29,6 +29,14 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/hotels',
+        name: 'hotel_search',
+        builder: (context, state) {
+          final searchQuery = state.uri.queryParameters['search'] ?? '';
+          return HotelListPage(destinationSlug: 'search', searchQuery: searchQuery);
+        },
+      ),
+      GoRoute(
         path: '/hotels/:hotelId',
         name: 'hotel_detail',
         builder: (context, state) {
