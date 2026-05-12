@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../domain/entities/hotel.dart';
@@ -23,7 +24,7 @@ class HotelCardWidget extends StatelessWidget {
       color: AppColors.white,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onTap,
+        onTap: () => context.go('/hotels/${hotel.id}'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

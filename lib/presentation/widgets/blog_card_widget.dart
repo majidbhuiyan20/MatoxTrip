@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
@@ -22,7 +23,7 @@ class BlogCardWidget extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       color: AppColors.white,
       child: InkWell(
-        onTap: onTap,
+        onTap: () => context.go('/blog/${blogPost.slug}'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -48,8 +48,8 @@ class NavbarWidget extends StatelessWidget {
             const Spacer(),
             // Navigation Items
             if (!isMobile) ...[
-              _NavLink(title: 'Stays', icon: Icons.bed, onTap: () => context.go('/hotels')),
-              _NavLink(title: 'Destinations', icon: Icons.map, onTap: () {}),
+              _NavLink(title: 'Stays', icon: Icons.bed, onTap: () => context.go('/destinations/all')),
+              _NavLink(title: 'Destinations', icon: Icons.map, onTap: () => context.go('/')),
               _NavLink(title: 'Blog', icon: Icons.article, onTap: () => context.go('/blog')),
               _NavLink(title: 'Contact', icon: Icons.contact_support, onTap: () => context.go('/contact')),
               const SizedBox(width: 20),
